@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
   <title>売上報告ツール</title>
   <style>
     body {
@@ -16,7 +16,7 @@
       font-size: 28px;
     }
     .container {
-      max-width: 800px;
+      max-width: 900px;
       margin: auto;
     }
     .form-group {
@@ -66,6 +66,7 @@
       border: 1px dashed #aaa;
       margin-top: 10px;
       white-space: pre-wrap;
+      min-height: 100px;
     }
     button {
       padding: 10px 20px;
@@ -80,9 +81,9 @@
   <div class="container">
     <div class="form-group">
       <label for="reportDate">日付：</label>
-      <input type="date" id="reportDate">
+      <input type="date" id="reportDate" />
       <label for="reportName">名前：</label>
-      <input type="text" id="reportName" placeholder="例：田中">
+      <input type="text" id="reportName" placeholder="例：田中" />
     </div>
 
     <div class="totals">
@@ -90,16 +91,17 @@
     </div>
 
     <div class="category">
-      <h2>基本商品</h2>
+      <h2>商品入力</h2>
       <table>
         <thead>
           <tr>
             <th>商品名</th>
-            <th>個数</th>
+            <th>売上個数</th>
+            <th>補充個数</th>
           </tr>
         </thead>
         <tbody id="productTable">
-          <!-- JSで商品が追加されます -->
+          <!-- 商品行をJSで挿入 -->
         </tbody>
       </table>
     </div>
@@ -110,12 +112,18 @@
 
   <script>
     const products = [
-      { name: "ミルクセーキ" },
-      { name: "たまごサンド" },
-      { name: "コーヒー" },
-      { name: "カフェラテ" },
-      { name: "ココア" },
-      { name: "モンブラン" }
+      "コーヒー",
+      "カフェオレ",
+      "ココア",
+      "ミルクセーキ",
+      "たまごサンド",
+      "モンブラン",
+      "BMC初心者パック",
+      "プリンアラモード",
+      "KINGコーヒー",
+      "KINGカフェオレ",
+      "KINGココア",
+      "抹茶＆いちご大福"
     ];
 
     const table = document.getElementById('productTable');
@@ -126,8 +134,9 @@
       products.forEach((product, index) => {
         const row = document.createElement('tr');
         row.innerHTML = `
-          <td>${product.name}</td>
-          <td><input type="number" min="0" value="0" data-index="${index}" /></td>
+          <td>${product}</td>
+          <td><input type="number" min="0" value="0" data-index="${index}" data-type="sales" /></td>
+          <td><input type="number" min="0" value="0" data-index="${index}" data-type="restock" /></td>
         `;
         table.appendChild(row);
       });
@@ -142,19 +151,25 @@
       const name = document.getElementById('reportName').value.trim();
 
       let lines = [];
-
       if (date || name) {
         lines.push(`${date}　${name}`.trim());
       }
 
       let count = 0;
 
-      document.querySelectorAll('input[type="number"]').forEach(input => {
-        const index = input.dataset.index;
-        const val = parseInt(input.value) || 0;
-        if (val > 0) {
-          lines.push(`${products[index].name} ${val}個`);
+      products.forEach((product, index) => {
+        const salesInput = document.querySelector(`input[data-index="${index}"][data-type="sales"]`);
+        const restockInput = document.querySelector(`input[data-index="${index}"][data-type="restock"]`);
+        const salesVal = parseInt(salesInput.value) || 0;
+        const restockVal = parseInt(restockInput.value) || 0;
+
+        if (salesVal > 0) {
           count++;
+          let line = `${product} ${salesVal}`;
+          if (restockVal > 0) {
+            line += ` ${restockVal}(共有在庫に補充)`;
+          }
+          lines.push(line);
         }
       });
 
