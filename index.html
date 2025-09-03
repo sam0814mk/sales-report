@@ -107,7 +107,7 @@
     </div>
 
     <button onclick="copyToClipboard()">コピー</button>
-    <div class="output" id="copyArea">ここに報告文が表示されます</div>
+    <div class="output" id="copyArea">ここに売上が表示されます</div>
   </div>
 
   <script>
@@ -163,22 +163,24 @@
         const salesVal = parseInt(salesInput.value) || 0;
         const restockVal = parseInt(restockInput.value) || 0;
 
-        if (salesVal > 0 || restockVal > 0) {
-          count++;
-          let line = `${product}`;
-          if (salesVal > 0) line += ` 売上${salesVal}`;
-          if (restockVal > 0) line += `　補充${restockVal}`;
-          lines.push(line);
-        }
+        // 両方が0ならスキップ
+        if (salesVal === 0 && restockVal === 0) return;
+
+        count++;
+
+        let line = `${product}`;
+        if (salesVal > 0) line += ` 売上${salesVal}`;
+        if (restockVal > 0) line += `　補充${restockVal}`;
+        lines.push(line);
       });
 
       copyCount.textContent = count;
-      copyArea.textContent = lines.length > 0 ? lines.join('\n') : "ここに報告文が表示されます";
+      copyArea.textContent = lines.length > 0 ? lines.join('\n') : "ここに売上が表示されます";
     }
 
     function copyToClipboard() {
       const text = copyArea.textContent;
-      if (text && text !== "ここに報告文が表示されます") {
+      if (text && text !== "ここに売上が表示されます") {
         navigator.clipboard.writeText(text).then(() => {
           alert("コピーしました！");
         });
