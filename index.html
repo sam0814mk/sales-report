@@ -107,7 +107,7 @@
     </div>
 
     <button onclick="copyToClipboard()">コピー</button>
-    <div class="output" id="copyArea">ここに売上が表示されます</div>
+    <div class="output" id="copyArea">ここに報告文が表示されます</div>
   </div>
 
   <script>
@@ -175,12 +175,12 @@
       });
 
       copyCount.textContent = count;
-      copyArea.textContent = lines.length > 0 ? lines.join('\n') : "ここに売上が表示されます";
+      copyArea.textContent = lines.length > 0 ? lines.join('\n') : "ここに報告文が表示されます";
     }
 
     function copyToClipboard() {
       const text = copyArea.textContent;
-      if (text && text !== "ここに売上が表示されます") {
+      if (text && text !== "ここに報告文が表示されます") {
         navigator.clipboard.writeText(text).then(() => {
           alert("コピーしました！");
         });
