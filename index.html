@@ -147,12 +147,22 @@
     }
 
     function generateText() {
-      const date = document.getElementById('reportDate').value;
+      const dateInput = document.getElementById('reportDate').value;
       const name = document.getElementById('reportName').value.trim();
 
       let lines = [];
-      if (date || name) {
-        lines.push(`${date}　${name}`.trim());
+
+      // 日付を M/D 形式に変換
+      let formattedDate = '';
+      if (dateInput) {
+        const dateObj = new Date(dateInput);
+        const month = dateObj.getMonth() + 1;
+        const day = dateObj.getDate();
+        formattedDate = `${month}/${day}`;
+      }
+
+      if (formattedDate || name) {
+        lines.push(`${formattedDate}　${name}`.trim());
       }
 
       let count = 0;
@@ -163,7 +173,6 @@
         const salesVal = parseInt(salesInput.value) || 0;
         const restockVal = parseInt(restockInput.value) || 0;
 
-        // 両方が0ならスキップ
         if (salesVal === 0 && restockVal === 0) return;
 
         count++;
