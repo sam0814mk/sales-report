@@ -173,13 +173,19 @@
         const salesVal = parseInt(salesInput.value) || 0;
         const restockVal = parseInt(restockInput.value) || 0;
 
+        // 売上も補充も0なら出力しない
         if (salesVal === 0 && restockVal === 0) return;
 
         count++;
 
         let line = `${product}`;
-        if (salesVal > 0) line += ` 売上${salesVal}`;
-        if (restockVal > 0) line += `　補充${restockVal}`;
+        if (salesVal > 0 && restockVal === 0) {
+          line += `　${salesVal}`; // 売上のみ：数字だけ
+        } else {
+          if (salesVal > 0) line += ` 売上${salesVal}`;
+          if (restockVal > 0) line += `　補充${restockVal}`;
+        }
+
         lines.push(line);
       });
 
