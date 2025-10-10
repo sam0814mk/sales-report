@@ -1,209 +1,51 @@
-<!DOCTYPE html>
-<html lang="ja">
-<head>
-  <meta charset="UTF-8" />
-  <title>売上報告ツール</title>
-  <style>
-    body {
-      font-family: 'Segoe UI', sans-serif;
-      background-color: #fffaf3;
-      margin: 0;
-      padding: 40px;
-      color: #333;
-    }
-    h1 {
-      text-align: center;
-      font-size: 28px;
-    }
-    .container {
-      max-width: 900px;
-      margin: auto;
-    }
-    .form-group {
-      margin-bottom: 20px;
-    }
-    label {
-      display: inline-block;
-      margin-right: 10px;
-      font-weight: bold;
-    }
-    input[type="text"], input[type="date"] {
-      padding: 5px;
-      margin-right: 20px;
-    }
-    .category {
-      background: #fdf5e6;
-      padding: 20px;
-      border-radius: 12px;
-      margin-bottom: 30px;
-    }
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      background: #fff;
-    }
-    th, td {
-      padding: 10px;
-      border-bottom: 1px solid #ddd;
-      text-align: center;
-    }
-    th {
-      background: #d8b381;
-      color: white;
-    }
-    input[type="number"] {
-      width: 60px;
-      text-align: right;
-    }
-    .totals {
-      text-align: right;
-      margin: 10px 0;
-      font-weight: bold;
-    }
-    .output {
-      background: #fff;
-      padding: 10px;
-      border: 1px dashed #aaa;
-      margin-top: 10px;
-      white-space: pre-wrap;
-      min-height: 100px;
-    }
-    button {
-      padding: 10px 20px;
-      margin-top: 10px;
-    }
-  </style>
-</head>
-<body>
+function renderTable() {
+  products.forEach((product, index) => {
+    const row = document.createElement('tr');
+    row.innerHTML = `
+      <td>${product}</td>
+      <td>
+        <button type="button" class="dec10" data-index="${index}" data-type="sales">-10</button>
+        <input type="number" min="0" value="0" data-index="${index}" data-type="sales" />
+        <button type="button" class="inc10" data-index="${index}" data-type="sales">+10</button>
+      </td>
+      <td>
+        <button type="button" class="dec10" data-index="${index}" data-type="restock">-10</button>
+        <input type="number" min="0" value="0" data-index="${index}" data-type="restock" />
+        <button type="button" class="inc10" data-index="${index}" data-type="restock">+10</button>
+      </td>
+    `;
+    table.appendChild(row);
+  });
 
-  <h1>🧾 売上報告ツール</h1>
+  // イベントリスナー追加
+  document.querySelectorAll('input[type="number"], #reportDate, #reportName').forEach(input => {
+    input.addEventListener('input', generateText);
+  });
 
-  <div class="container">
-    <div class="form-group">
-      <label for="reportDate">日付：</label>
-      <input type="date" id="reportDate" />
-      <label for="reportName">名前：</label>
-      <input type="text" id="reportName" placeholder="" />
-    </div>
+  // +10ボタンのイベント
+  document.querySelectorAll('button.inc10').forEach(button => {
+    button.addEventListener('click', e => {
+      const index = e.currentTarget.dataset.index;
+      const type = e.currentTarget.dataset.type;
+      const input = document.querySelector(`input[data-index="${index}"][data-type="${type}"]`);
+      let val = parseInt(input.value) || 0;
+      val += 10;
+      input.value = val;
+      generateText();
+    });
+  });
 
-    <div class="totals">
-      コピー用：<span id="copyCount">0</span> 件
-    </div>
-
-    <div class="category">
-      <h2>商品入力</h2>
-      <table>
-        <thead>
-          <tr>
-            <th>商品名</th>
-            <th>売上個数</th>
-            <th>補充個数</th>
-          </tr>
-        </thead>
-        <tbody id="productTable">
-          <!-- 商品行をJSで挿入 -->
-        </tbody>
-      </table>
-    </div>
-
-    <button onclick="copyToClipboard()">コピー</button>
-    <div class="output" id="copyArea">ここに報告文が表示されます</div>
-  </div>
-
-  <script>
-    const products = [
-      "コーヒー",
-      "カフェラテ",
-      "ココア",
-      "ミルクセーキ",
-      "たまごサンド",
-      "モンブラン",
-      "BMC初心者パック",
-      "プリンアラモード",
-      "KINGコーヒー",
-      "KINGカフェラテ",
-      "KINGココア",
-      "抹茶＆いちご大福"
-    ];
-
-    const table = document.getElementById('productTable');
-    const copyArea = document.getElementById('copyArea');
-    const copyCount = document.getElementById('copyCount');
-
-    function renderTable() {
-      products.forEach((product, index) => {
-        const row = document.createElement('tr');
-        row.innerHTML = `
-          <td>${product}</td>
-          <td><input type="number" min="0" value="0" data-index="${index}" data-type="sales" /></td>
-          <td><input type="number" min="0" value="0" data-index="${index}" data-type="restock" /></td>
-        `;
-        table.appendChild(row);
-      });
-
-      document.querySelectorAll('input[type="number"], #reportDate, #reportName').forEach(input => {
-        input.addEventListener('input', generateText);
-      });
-    }
-
-    function generateText() {
-      const dateInput = document.getElementById('reportDate').value;
-      const name = document.getElementById('reportName').value.trim();
-
-      let lines = [];
-
-      // 日付を M/D 形式に変換
-      let formattedDate = '';
-      if (dateInput) {
-        const dateObj = new Date(dateInput);
-        const month = dateObj.getMonth() + 1;
-        const day = dateObj.getDate();
-        formattedDate = `${month}/${day}`;
-      }
-
-      if (formattedDate || name) {
-        lines.push(`${formattedDate}　${name}`.trim());
-      }
-
-      let count = 0;
-
-      products.forEach((product, index) => {
-        const salesInput = document.querySelector(`input[data-index="${index}"][data-type="sales"]`);
-        const restockInput = document.querySelector(`input[data-index="${index}"][data-type="restock"]`);
-        const salesVal = parseInt(salesInput.value) || 0;
-        const restockVal = parseInt(restockInput.value) || 0;
-
-        // 売上も補充も0なら出力しない
-        if (salesVal === 0 && restockVal === 0) return;
-
-        count++;
-
-        let line = `${product}`;
-        if (salesVal > 0 && restockVal === 0) {
-          line += `　${salesVal}`; // 売上のみ：数字だけ
-        } else {
-          if (salesVal > 0) line += ` 売上${salesVal}`;
-          if (restockVal > 0) line += `　補充${restockVal}`;
-        }
-
-        lines.push(line);
-      });
-
-      copyCount.textContent = count;
-      copyArea.textContent = lines.length > 0 ? lines.join('\n') : "ここに報告文が表示されます";
-    }
-
-    function copyToClipboard() {
-      const text = copyArea.textContent;
-      if (text && text !== "ここに報告文が表示されます") {
-        navigator.clipboard.writeText(text).then(() => {
-          alert("コピーしました！");
-        });
-      }
-    }
-
-    renderTable();
-  </script>
-
-</body>
-</html>
+  // -10ボタンのイベント
+  document.querySelectorAll('button.dec10').forEach(button => {
+    button.addEventListener('click', e => {
+      const index = e.currentTarget.dataset.index;
+      const type = e.currentTarget.dataset.type;
+      const input = document.querySelector(`input[data-index="${index}"][data-type="${type}"]`);
+      let val = parseInt(input.value) || 0;
+      val -= 10;
+      if (val < 0) val = 0;
+      input.value = val;
+      generateText();
+    });
+  });
+}
