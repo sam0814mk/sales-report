@@ -1,51 +1,71 @@
-function renderTable() {
-  products.forEach((product, index) => {
-    const row = document.createElement('tr');
-    row.innerHTML = `
-      <td>${product}</td>
-      <td>
-        <button type="button" class="dec10" data-index="${index}" data-type="sales">-10</button>
-        <input type="number" min="0" value="0" data-index="${index}" data-type="sales" />
-        <button type="button" class="inc10" data-index="${index}" data-type="sales">+10</button>
-      </td>
-      <td>
-        <button type="button" class="dec10" data-index="${index}" data-type="restock">-10</button>
-        <input type="number" min="0" value="0" data-index="${index}" data-type="restock" />
-        <button type="button" class="inc10" data-index="${index}" data-type="restock">+10</button>
-      </td>
-    `;
-    table.appendChild(row);
-  });
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>在庫管理テーブル</title>
+</head>
+<body>
+  <table id="table"></table>
 
-  // 数値入力欄や日付・名前の変更時にテキストを生成
-  document.querySelectorAll('input[type="number"], #reportDate, #reportName').forEach(input => {
-    input.addEventListener('input', generateText);
-  });
+  <script>
+    const table = document.getElementById('table');
+    const products = ['商品A', '商品B', '商品C'];
 
-  // +10ボタンのクリックイベント
-  document.querySelectorAll('button.inc10').forEach(button => {
-    button.addEventListener('click', e => {
-      const index = e.currentTarget.dataset.index;
-      const type = e.currentTarget.dataset.type;
-      const input = document.querySelector(`input[data-index="${index}"][data-type="${type}"]`);
-      let val = parseInt(input.value) || 0;
-      val += 10;
-      input.value = val;
-      generateText();
-    });
-  });
+    function generateText() {
+      console.log('テキスト生成処理'); // 仮
+    }
 
-  // -10ボタンのクリックイベント
-  document.querySelectorAll('button.dec10').forEach(button => {
-    button.addEventListener('click', e => {
-      const index = e.currentTarget.dataset.index;
-      const type = e.currentTarget.dataset.type;
-      const input = document.querySelector(`input[data-index="${index}"][data-type="${type}"]`);
-      let val = parseInt(input.value) || 0;
-      val -= 10;
-      if (val < 0) val = 0;
-      input.value = val;
-      generateText();
-    });
-  });
-}
+    function renderTable() {
+      products.forEach((product, index) => {
+        const row = document.createElement('tr');
+        row.innerHTML = `
+          <td>${product}</td>
+          <td>
+            <button type="button" class="dec10" data-index="${index}" data-type="sales">-10</button>
+            <input type="number" min="0" value="0" data-index="${index}" data-type="sales" />
+            <button type="button" class="inc10" data-index="${index}" data-type="sales">+10</button>
+          </td>
+          <td>
+            <button type="button" class="dec10" data-index="${index}" data-type="restock">-10</button>
+            <input type="number" min="0" value="0" data-index="${index}" data-type="restock" />
+            <button type="button" class="inc10" data-index="${index}" data-type="restock">+10</button>
+          </td>
+        `;
+        table.appendChild(row);
+      });
+
+      // イベントリスナ追加
+      document.querySelectorAll('input[type="number"], #reportDate, #reportName').forEach(input => {
+        input.addEventListener('input', generateText);
+      });
+
+      document.querySelectorAll('button.inc10').forEach(button => {
+        button.addEventListener('click', e => {
+          const index = e.currentTarget.dataset.index;
+          const type = e.currentTarget.dataset.type;
+          const input = document.querySelector(`input[data-index="${index}"][data-type="${type}"]`);
+          let val = parseInt(input.value) || 0;
+          val += 10;
+          input.value = val;
+          generateText();
+        });
+      });
+
+      document.querySelectorAll('button.dec10').forEach(button => {
+        button.addEventListener('click', e => {
+          const index = e.currentTarget.dataset.index;
+          const type = e.currentTarget.dataset.type;
+          const input = document.querySelector(`input[data-index="${index}"][data-type="${type}"]`);
+          let val = parseInt(input.value) || 0;
+          val -= 10;
+          if (val < 0) val = 0;
+          input.value = val;
+          generateText();
+        });
+      });
+    }
+
+    renderTable();
+  </script>
+</body>
+</html>
