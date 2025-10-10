@@ -17,12 +17,12 @@ function renderTable() {
     table.appendChild(row);
   });
 
-  // イベントリスナー追加
+  // 数値入力欄や日付・名前の変更時にテキストを生成
   document.querySelectorAll('input[type="number"], #reportDate, #reportName').forEach(input => {
     input.addEventListener('input', generateText);
   });
 
-  // +10ボタンのイベント
+  // +10ボタンのクリックイベント
   document.querySelectorAll('button.inc10').forEach(button => {
     button.addEventListener('click', e => {
       const index = e.currentTarget.dataset.index;
@@ -35,7 +35,7 @@ function renderTable() {
     });
   });
 
-  // -10ボタンのイベント
+  // -10ボタンのクリックイベント
   document.querySelectorAll('button.dec10').forEach(button => {
     button.addEventListener('click', e => {
       const index = e.currentTarget.dataset.index;
