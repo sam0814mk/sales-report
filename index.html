@@ -14,16 +14,17 @@
     h1 {
       text-align: center;
       font-size: 28px;
+      margin-bottom: 30px;
     }
     .container {
-      max-width: 900px;
+      max-width: 1200px;
       margin: auto;
     }
     .form-group {
       margin-bottom: 20px;
+      text-align: center;
     }
     label {
-      display: inline-block;
       margin-right: 10px;
       font-weight: bold;
     }
@@ -31,11 +32,21 @@
       padding: 5px;
       margin-right: 20px;
     }
+    .category-wrap {
+      display: flex;
+      justify-content: space-between;
+      gap: 20px;
+      flex-wrap: wrap;
+    }
     .category {
       background: #fdf5e6;
       padding: 20px;
       border-radius: 12px;
-      margin-bottom: 30px;
+      flex: 1;
+      min-width: 450px;
+    }
+    .category h2 {
+      text-align: center;
     }
     table {
       width: 100%;
@@ -55,6 +66,24 @@
       width: 60px;
       text-align: right;
     }
+    .btn-group {
+      display: flex;
+      justify-content: center;
+      gap: 3px;
+      margin-top: 4px;
+    }
+    .btn {
+      background: #d8b381;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      padding: 2px 6px;
+      cursor: pointer;
+      font-size: 11px;
+    }
+    .btn:hover {
+      background: #c79b5b;
+    }
     .totals {
       text-align: right;
       margin: 10px 0;
@@ -64,13 +93,22 @@
       background: #fff;
       padding: 10px;
       border: 1px dashed #aaa;
-      margin-top: 10px;
+      margin-top: 20px;
       white-space: pre-wrap;
       min-height: 100px;
     }
-    button {
-      padding: 4px 8px;
-      margin: 0 3px;
+    button.copy-btn {
+      display: block;
+      margin: 15px auto;
+      padding: 10px 20px;
+      border: none;
+      background: #d8b381;
+      color: white;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+    button.copy-btn:hover {
+      background: #c79b5b;
     }
   </style>
 </head>
@@ -86,158 +124,153 @@
       <input type="text" id="reportName" placeholder="" />
     </div>
 
-    <div class="totals">
-      コピー用：<span id="copyCount">0</span> 件
+    <div class="category-wrap">
+      <!-- 左：通常メニュー -->
+      <div class="category" id="normalCategory">
+        <h2>☕ 通常メニュー</h2>
+        <div class="totals">コピー用：<span id="normalCount">0</span> 件</div>
+        <table>
+          <thead>
+            <tr>
+              <th>商品名</th>
+              <th>売上個数</th>
+              <th>補充個数</th>
+            </tr>
+          </thead>
+          <tbody id="normalTable"></tbody>
+        </table>
+      </div>
+
+      <!-- 右：ハロウィンメニュー -->
+      <div class="category" id="halloweenCategory">
+        <h2>🎃 ハロウィンメニュー</h2>
+        <div class="totals">コピー用：<span id="halloweenCount">0</span> 件</div>
+        <table>
+          <thead>
+            <tr>
+              <th>商品名</th>
+              <th>売上個数</th>
+              <th>補充個数</th>
+            </tr>
+          </thead>
+          <tbody id="halloweenTable"></tbody>
+        </table>
+      </div>
     </div>
 
-    <div class="category">
-      <h2>商品入力</h2>
-      <table>
-        <thead>
-          <tr>
-            <th>商品名</th>
-            <th>売上個数</th>
-            <th>補充個数</th>
-          </tr>
-        </thead>
-        <tbody id="productTable">
-          <!-- 商品行をJSで挿入 -->
-        </tbody>
-      </table>
-    </div>
-
-    <button onclick="copyToClipboard()">コピー</button>
+    <button class="copy-btn" onclick="copyToClipboard()">コピー</button>
     <div class="output" id="copyArea">ここに報告文が表示されます</div>
   </div>
 
   <script>
-    const products = [
-      "コーヒー",
-      "カフェラテ",
-      "ココア",
-      "ミルクセーキ",
-      "たまごサンド",
-      "モンブラン",
-      "BMC初心者パック",
-      "プリンアラモード",
-      "KINGコーヒー",
-      "KINGカフェラテ",
-      "KINGココア",
-      "抹茶＆いちご大福"
-    ];
+    const menus = {
+      normal: [
+        "たまごサンド",
+        "ミルクセーキ",
+        "コーヒー",
+        "カフェラテ",
+        "ココア",
+        "モンブラン",
+        "プリンアラモード",
+        "KINGコーヒー",
+        "KINGカフェラテ",
+        "KINGココア",
+        "BMC初心者パック"
+      ],
+      halloween: [
+        "🎃おばけクッキー",
+        "🎃ほくほく南瓜パイ",
+        "🎃ハロウィンセット2025",
+        "🎃月夜のおばけ珈琲"
+      ]
+    };
 
-    const table = document.getElementById('productTable');
-    const copyArea = document.getElementById('copyArea');
-    const copyCount = document.getElementById('copyCount');
-
-    function renderTable() {
-      products.forEach((product, index) => {
+    function createTable(menuType, tableId, countId) {
+      const table = document.getElementById(tableId);
+      menus[menuType].forEach((item, index) => {
         const row = document.createElement('tr');
         row.innerHTML = `
-          <td>${product}</td>
+          <td>${item}</td>
           <td>
-            <button type="button" class="dec10" data-index="${index}" data-type="sales">-10</button>
-            <input type="number" min="0" value="0" data-index="${index}" data-type="sales" />
-            <button type="button" class="inc10" data-index="${index}" data-type="sales">+10</button>
+            <input type="number" min="0" value="0" data-menu="${menuType}" data-index="${index}" data-type="sales" />
+            <div class="btn-group">
+              <button class="btn" onclick="changeValue('${menuType}', ${index}, 'sales', 10)">+10</button>
+              <button class="btn" onclick="changeValue('${menuType}', ${index}, 'sales', -10)">-10</button>
+              <button class="btn" onclick="changeValue('${menuType}', ${index}, 'sales', 100)">+100</button>
+              <button class="btn" onclick="changeValue('${menuType}', ${index}, 'sales', -100)">-100</button>
+            </div>
           </td>
           <td>
-            <button type="button" class="dec10" data-index="${index}" data-type="restock">-10</button>
-            <input type="number" min="0" value="0" data-index="${index}" data-type="restock" />
-            <button type="button" class="inc10" data-index="${index}" data-type="restock">+10</button>
+            <input type="number" min="0" value="0" data-menu="${menuType}" data-index="${index}" data-type="restock" />
+            <div class="btn-group">
+              <button class="btn" onclick="changeValue('${menuType}', ${index}, 'restock', 10)">+10</button>
+              <button class="btn" onclick="changeValue('${menuType}', ${index}, 'restock', -10)">-10</button>
+              <button class="btn" onclick="changeValue('${menuType}', ${index}, 'restock', 100)">+100</button>
+              <button class="btn" onclick="changeValue('${menuType}', ${index}, 'restock', -100)">-100</button>
+            </div>
           </td>
         `;
         table.appendChild(row);
       });
+      document.querySelectorAll(`#${tableId} input`).forEach(i => i.addEventListener('input', generateText));
+    }
 
-      // 入力・日付・名前変更時にテキスト生成
-      document.querySelectorAll('input[type="number"], #reportDate, #reportName').forEach(input => {
-        input.addEventListener('input', generateText);
-      });
-
-      // +10ボタン
-      document.querySelectorAll('button.inc10').forEach(button => {
-        button.addEventListener('click', e => {
-          const index = e.currentTarget.dataset.index;
-          const type = e.currentTarget.dataset.type;
-          const input = document.querySelector(`input[data-index="${index}"][data-type="${type}"]`);
-          let val = parseInt(input.value) || 0;
-          val += 10;
-          input.value = val;
-          generateText();
-        });
-      });
-
-      // -10ボタン
-      document.querySelectorAll('button.dec10').forEach(button => {
-        button.addEventListener('click', e => {
-          const index = e.currentTarget.dataset.index;
-          const type = e.currentTarget.dataset.type;
-          const input = document.querySelector(`input[data-index="${index}"][data-type="${type}"]`);
-          let val = parseInt(input.value) || 0;
-          val -= 10;
-          if (val < 0) val = 0;
-          input.value = val;
-          generateText();
-        });
-      });
+    function changeValue(menu, index, type, diff) {
+      const input = document.querySelector(`input[data-menu="${menu}"][data-index="${index}"][data-type="${type}"]`);
+      let newValue = parseInt(input.value || 0) + diff;
+      if (newValue < 0) newValue = 0;
+      input.value = newValue;
+      generateText();
     }
 
     function generateText() {
-      const dateInput = document.getElementById('reportDate').value;
+      const date = document.getElementById('reportDate').value;
       const name = document.getElementById('reportName').value.trim();
-
       let lines = [];
 
-      // 日付を M/D 形式に変換
-      let formattedDate = '';
-      if (dateInput) {
-        const dateObj = new Date(dateInput);
-        const month = dateObj.getMonth() + 1;
-        const day = dateObj.getDate();
-        formattedDate = `${month}/${day}`;
-      }
-
-      if (formattedDate || name) {
+      if (date || name) {
+        const dateObj = date ? new Date(date) : null;
+        const formattedDate = dateObj ? `${dateObj.getMonth() + 1}/${dateObj.getDate()}` : '';
         lines.push(`${formattedDate}　${name}`.trim());
       }
 
-      let count = 0;
+      let totalCount = 0;
+      let normalCount = 0;
+      let halloweenCount = 0;
 
-      products.forEach((product, index) => {
-        const salesInput = document.querySelector(`input[data-index="${index}"][data-type="sales"]`);
-        const restockInput = document.querySelector(`input[data-index="${index}"][data-type="restock"]`);
-        const salesVal = parseInt(salesInput.value) || 0;
-        const restockVal = parseInt(restockInput.value) || 0;
+      Object.keys(menus).forEach(menuType => {
+        menus[menuType].forEach((item, index) => {
+          const sales = parseInt(document.querySelector(`input[data-menu="${menuType}"][data-index="${index}"][data-type="sales"]`).value) || 0;
+          const restock = parseInt(document.querySelector(`input[data-menu="${menuType}"][data-index="${index}"][data-type="restock"]`).value) || 0;
+          if (sales === 0 && restock === 0) return;
+          totalCount++;
+          if (menuType === "normal") normalCount++; else halloweenCount++;
 
-        if (salesVal === 0 && restockVal === 0) return;
-
-        count++;
-
-        let line = `${product}`;
-        if (salesVal > 0 && restockVal === 0) {
-          line += `　${salesVal}`;
-        } else {
-          if (salesVal > 0) line += ` 売上${salesVal}`;
-          if (restockVal > 0) line += `　補充${restockVal}`;
-        }
-
-        lines.push(line);
+          let line = `${item}`;
+          if (sales > 0 && restock === 0) line += `　${sales}`;
+          else {
+            if (sales > 0) line += ` 売上${sales}`;
+            if (restock > 0) line += `　補充${restock}`;
+          }
+          lines.push(line);
+        });
       });
 
-      copyCount.textContent = count;
-      copyArea.textContent = lines.length > 0 ? lines.join('\n') : "ここに報告文が表示されます";
+      document.getElementById('normalCount').textContent = normalCount;
+      document.getElementById('halloweenCount').textContent = halloweenCount;
+      document.getElementById('copyArea').textContent = lines.length > 0 ? lines.join('\n') : "ここに報告文が表示されます";
     }
 
     function copyToClipboard() {
-      const text = copyArea.textContent;
+      const text = document.getElementById('copyArea').textContent;
       if (text && text !== "ここに報告文が表示されます") {
-        navigator.clipboard.writeText(text).then(() => {
-          alert("コピーしました！");
-        });
+        navigator.clipboard.writeText(text);
+        alert("コピーしました！");
       }
     }
 
-    renderTable();
+    createTable("normal", "normalTable", "normalCount");
+    createTable("halloween", "halloweenTable", "halloweenCount");
   </script>
 
 </body>
