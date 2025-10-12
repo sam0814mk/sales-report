@@ -191,7 +191,7 @@ function createRows(products, tbodyId, category) {
         <div class="flex-container">
           <button class="dec100" data-index="${index}" data-type="sales" data-cat="${category}">《</button>
           <button class="dec10" data-index="${index}" data-type="sales" data-cat="${category}">〈</button>
-          <input type="number" min="0" max="100" value="0" data-index="${index}" data-type="sales" data-cat="${category}" />
+          <input type="number" value="0" data-index="${index}" data-type="sales" data-cat="${category}" />
           <button class="inc10" data-index="${index}" data-type="sales" data-cat="${category}">〉</button>
           <button class="inc100" data-index="${index}" data-type="sales" data-cat="${category}">》</button>
         </div>
@@ -200,7 +200,7 @@ function createRows(products, tbodyId, category) {
         <div class="flex-container">
           <button class="dec100" data-index="${index}" data-type="restock" data-cat="${category}">《</button>
           <button class="dec10" data-index="${index}" data-type="restock" data-cat="${category}">〈</button>
-          <input type="number" min="0" max="100" value="0" data-index="${index}" data-type="restock" data-cat="${category}" />
+          <input type="number" value="0" data-index="${index}" data-type="restock" data-cat="${category}" />
           <button class="inc10" data-index="${index}" data-type="restock" data-cat="${category}">〉</button>
           <button class="inc100" data-index="${index}" data-type="restock" data-cat="${category}">》</button>
         </div>
@@ -223,8 +223,8 @@ function setupButtons() {
       if (e.currentTarget.classList.contains('dec10')) val -= 10;
       if (e.currentTarget.classList.contains('dec100')) val -= 100;
 
-      if (val < 0) val = 0;
-      if (val > 100) val = 100;
+      if (val < 0) val = 0; // 下限は0
+      // 上限チェックなし
 
       input.value = val;
       generateText();
