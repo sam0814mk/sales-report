@@ -57,33 +57,39 @@
       width: 100%;
       border-collapse: collapse;
       background: #fff;
+      table-layout: fixed; /* 列幅を均等に */
     }
     th, td {
-      padding: 8px;
+      padding: 6px;
       border-bottom: 1px solid #ddd;
       text-align: center;
+      vertical-align: middle;
     }
     th {
       background: #d8b381;
       color: white;
     }
 
-    /* 修正部分：ボタンと入力欄の横並び */
+    /* 横並び＆幅調整 */
     td {
       display: flex;
       justify-content: center;
       align-items: center;
-      gap: 4px; /* ボタンと入力欄の間隔 */
+      gap: 3px;
     }
     td button {
-      padding: 2px 4px;
-      width: 30px; /* 横幅を小さく */
-      font-size: 0.9em;
+      padding: 1px 3px;
+      width: 25px; /* 少し小さく */
+      font-size: 0.85em;
       cursor: pointer;
     }
     td input[type="number"] {
-      width: 50px;
+      width: 40px; /* 狭く */
       text-align: right;
+    }
+    td:first-child {
+      justify-content: flex-start; /* 商品名は左寄せ */
+      font-weight: bold;
     }
 
     .output {
@@ -268,7 +274,6 @@
       }
     }
 
-    // 初期描画
     createRows(normalProducts, 'normalMenu', 'normal');
     createRows(halloweenProducts, 'halloweenMenu', 'halloween');
     setupButtons();
