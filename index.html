@@ -1,148 +1,231 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-<meta charset="UTF-8">
-<title>販売・入荷管理</title>
-<style>
-  body {
-    font-family: sans-serif;
-    display: flex;
-    justify-content: space-around;
-    align-items: flex-start;
-    background: #f8f9fa;
-    padding: 20px;
-  }
-  section {
-    width: 45%;
-    background: #fff;
-    border-radius: 10px;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-    padding: 15px;
-  }
-  h2 {
-    text-align: center;
-    background: #e8e8e8;
-    padding: 10px;
-    border-radius: 8px;
-    font-size: 18px;
-    margin-bottom: 10px;
-  }
-  table {
-    border-collapse: collapse;
-    width: 100%;
-  }
-  th, td {
-    border: 1px solid #ccc;
-    padding: 8px;
-    text-align: center;
-  }
-  input[type="number"] {
-    width: 60px;
-    text-align: right;
-    padding: 3px;
-  }
-  button {
-    margin: 0 2px;
-    padding: 2px 6px;
-    font-size: 14px;
-    border: 1px solid #ccc;
-    background: #f2f2f2;
-    border-radius: 4px;
-    cursor: pointer;
-  }
-  button:hover {
-    background: #e0e0e0;
-  }
-</style>
+  <meta charset="UTF-8" />
+  <title>売上報告ツール</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #fffaf3;
+      margin: 0;
+      padding: 40px;
+      color: #333;
+    }
+    h1 {
+      text-align: center;
+      font-size: 28px;
+    }
+    .container {
+      max-width: 900px;
+      margin: auto;
+    }
+    .form-group {
+      margin-bottom: 20px;
+    }
+    label {
+      display: inline-block;
+      margin-right: 10px;
+      font-weight: bold;
+    }
+    input[type="text"], input[type="date"] {
+      padding: 5px;
+      margin-right: 20px;
+    }
+    .category {
+      background: #fdf5e6;
+      padding: 20px;
+      border-radius: 12px;
+      margin-bottom: 30px;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: #fff;
+    }
+    th, td {
+      padding: 10px;
+      border-bottom: 1px solid #ddd;
+      text-align: center;
+    }
+    th {
+      background: #d8b381;
+      color: white;
+    }
+    input[type="number"] {
+      width: 60px;
+      text-align: right;
+    }
+    .totals {
+      text-align: right;
+      margin: 10px 0;
+      font-weight: bold;
+    }
+    .output {
+      background: #fff;
+      padding: 10px;
+      border: 1px dashed #aaa;
+      margin-top: 10px;
+      white-space: pre-wrap;
+      min-height: 100px;
+    }
+    button {
+      padding: 4px 8px;
+      margin: 0 2px;
+      cursor: pointer;
+    }
+  </style>
 </head>
 <body>
 
-<section>
-  <h2>通常メニュー</h2>
-  <table id="normalTable">
-    <tr><th>商品名</th><th>販売数</th><th>入荷数</th></tr>
-  </table>
-</section>
+  <h1>🧾 売上報告ツール</h1>
 
-<section>
-  <h2>🎃ハロウィンメニュー</h2>
-  <table id="halloweenTable">
-    <tr><th>商品名</th><th>販売数</th><th>入荷数</th></tr>
-  </table>
-</section>
+  <div class="container">
+    <div class="form-group">
+      <label for="reportDate">日付：</label>
+      <input type="date" id="reportDate" />
+      <label for="reportName">名前：</label>
+      <input type="text" id="reportName" placeholder="" />
+    </div>
 
-<script>
-const normalProducts = [
-  'たまごサンド',
-  'ミルクセーキ',
-  'コーヒー',
-  'カフェラテ',
-  'ココア',
-  'モンブラン',
-  'プリンアラモード',
-  'KINGコーヒー',
-  'KINGカフェラテ',
-  'KINGココア',
-  'BMC初心者パック'
-];
+    <div class="totals">
+      コピー用：<span id="copyCount">0</span> 件
+    </div>
 
-const halloweenProducts = [
-  '🎃おばけクッキー',
-  '🎃ほくほく南瓜パイ',
-  '🎃ハロウィンセット2025',
-  '🎃月夜のおばけ珈琲'
-];
+    <div class="category">
+      <h2>商品入力</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>商品名</th>
+            <th>売上個数</th>
+            <th>補充個数</th>
+          </tr>
+        </thead>
+        <tbody id="productTable">
+          <!-- 商品行をJSで挿入 -->
+        </tbody>
+      </table>
+    </div>
 
-function renderTable(products, tableId) {
-  const table = document.getElementById(tableId);
-  products.forEach((product, index) => {
-    const row = document.createElement('tr');
-    row.innerHTML = `
-      <td>${product}</td>
-      <td>
-        <button type="button" class="dec100" data-index="${index}" data-type="sales">《</button>
-        <button type="button" class="dec10" data-index="${index}" data-type="sales">〈</button>
-        <input type="number" min="0" value="0" data-index="${index}" data-type="sales" />
-        <button type="button" class="inc10" data-index="${index}" data-type="sales">〉</button>
-        <button type="button" class="inc100" data-index="${index}" data-type="sales">》</button>
-      </td>
-      <td>
-        <button type="button" class="dec100" data-index="${index}" data-type="restock">《</button>
-        <button type="button" class="dec10" data-index="${index}" data-type="restock">〈</button>
-        <input type="number" min="0" value="0" data-index="${index}" data-type="restock" />
-        <button type="button" class="inc10" data-index="${index}" data-type="restock">〉</button>
-        <button type="button" class="inc100" data-index="${index}" data-type="restock">》</button>
-      </td>
-    `;
-    table.appendChild(row);
-  });
-}
+    <button onclick="copyToClipboard()">コピー</button>
+    <div class="output" id="copyArea">ここに報告文が表示されます</div>
+  </div>
 
-function addEvents() {
-  const updateValue = (index, type, delta) => {
-    const input = document.querySelector(`input[data-index="${index}"][data-type="${type}"]`);
-    let val = parseInt(input.value) || 0;
-    val += delta;
-    if (val < 0) val = 0;
-    input.value = val;
-  };
+  <script>
+    const products = [
+      "コーヒー",
+      "カフェラテ",
+      "ココア",
+      "ミルクセーキ",
+      "たまごサンド",
+      "モンブラン",
+      "BMC初心者パック",
+      "プリンアラモード",
+      "KINGコーヒー",
+      "KINGカフェラテ",
+      "KINGココア",
+      "抹茶＆いちご大福"
+    ];
 
-  document.querySelectorAll('button').forEach(button => {
-    button.addEventListener('click', e => {
-      const index = e.currentTarget.dataset.index;
-      const type = e.currentTarget.dataset.type;
-      if (e.currentTarget.classList.contains('inc10')) updateValue(index, type, 10);
-      if (e.currentTarget.classList.contains('dec10')) updateValue(index, type, -10);
-      if (e.currentTarget.classList.contains('inc100')) updateValue(index, type, 100);
-      if (e.currentTarget.classList.contains('dec100')) updateValue(index, type, -100);
-    });
-  });
-}
+    const table = document.getElementById('productTable');
+    const copyArea = document.getElementById('copyArea');
+    const copyCount = document.getElementById('copyCount');
 
-renderTable(normalProducts, 'normalTable');
-renderTable(halloweenProducts, 'halloweenTable');
-addEvents();
-</script>
+    function renderTable() {
+      products.forEach((product, index) => {
+        const row = document.createElement('tr');
+        row.innerHTML = `
+          <td>${product}</td>
+          <td>
+            <button class="dec100" data-index="${index}" data-type="sales">《</button>
+            <button class="dec10" data-index="${index}" data-type="sales">〈</button>
+            <input type="number" min="0" max="100" value="0" data-index="${index}" data-type="sales" />
+            <button class="inc10" data-index="${index}" data-type="sales">〉</button>
+            <button class="inc100" data-index="${index}" data-type="sales">》</button>
+          </td>
+          <td>
+            <button class="dec100" data-index="${index}" data-type="restock">《</button>
+            <button class="dec10" data-index="${index}" data-type="restock">〈</button>
+            <input type="number" min="0" max="100" value="0" data-index="${index}" data-type="restock" />
+            <button class="inc10" data-index="${index}" data-type="restock">〉</button>
+            <button class="inc100" data-index="${index}" data-type="restock">》</button>
+          </td>
+        `;
+        table.appendChild(row);
+      });
+
+      // 入力・日付・名前変更時にテキスト生成
+      document.querySelectorAll('input[type="number"], #reportDate, #reportName').forEach(input => {
+        input.addEventListener('input', generateText);
+      });
+
+      // 各ボタンの動作
+      document.querySelectorAll('button').forEach(button => {
+        button.addEventListener('click', e => {
+          const type = e.currentTarget.dataset.type;
+          const index = e.currentTarget.dataset.index;
+          if (type && index !== undefined) {
+            const input = document.querySelector(`input[data-index="${index}"][data-type="${type}"]`);
+            let val = parseInt(input.value) || 0;
+
+            if (e.currentTarget.classList.contains('inc10')) val += 10;
+            if (e.currentTarget.classList.contains('inc100')) val += 100;
+            if (e.currentTarget.classList.contains('dec10')) val -= 10;
+            if (e.currentTarget.classList.contains('dec100')) val -= 100;
+
+            if (val < 0) val = 0;
+            if (val > 100) val = 100;
+
+            input.value = val;
+            generateText();
+          }
+        });
+      });
+    }
+
+    function generateText() {
+      const dateInput = document.getElementById('reportDate').value;
+      const name = document.getElementById('reportName').value.trim();
+
+      let lines = [];
+      let formattedDate = '';
+
+      if (dateInput) {
+        const dateObj = new Date(dateInput);
+        formattedDate = `${dateObj.getMonth() + 1}/${dateObj.getDate()}`;
+      }
+
+      if (formattedDate || name) lines.push(`${formattedDate}　${name}`.trim());
+
+      let count = 0;
+      products.forEach((product, index) => {
+        const salesVal = parseInt(document.querySelector(`input[data-index="${index}"][data-type="sales"]`).value) || 0;
+        const restockVal = parseInt(document.querySelector(`input[data-index="${index}"][data-type="restock"]`).value) || 0;
+        if (salesVal === 0 && restockVal === 0) return;
+        count++;
+
+        let line = `${product}`;
+        if (salesVal > 0 && restockVal === 0) line += `　${salesVal}`;
+        else {
+          if (salesVal > 0) line += ` 売上${salesVal}`;
+          if (restockVal > 0) line += `　補充${restockVal}`;
+        }
+        lines.push(line);
+      });
+
+      copyCount.textContent = count;
+      copyArea.textContent = lines.length > 0 ? lines.join('\n') : "ここに報告文が表示されます";
+    }
+
+    function copyToClipboard() {
+      const text = copyArea.textContent;
+      if (text && text !== "ここに報告文が表示されます") {
+        navigator.clipboard.writeText(text).then(() => alert("コピーしました！"));
+      }
+    }
+
+    renderTable();
+  </script>
 
 </body>
 </html>
