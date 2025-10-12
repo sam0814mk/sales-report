@@ -67,10 +67,25 @@
       background: #d8b381;
       color: white;
     }
-    input[type="number"] {
-      width: 60px;
+
+    /* 修正部分：ボタンと入力欄の横並び */
+    td {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 4px; /* ボタンと入力欄の間隔 */
+    }
+    td button {
+      padding: 2px 4px;
+      width: 30px; /* 横幅を小さく */
+      font-size: 0.9em;
+      cursor: pointer;
+    }
+    td input[type="number"] {
+      width: 50px;
       text-align: right;
     }
+
     .output {
       background: #fff;
       padding: 10px;
@@ -79,7 +94,7 @@
       white-space: pre-wrap;
       min-height: 100px;
     }
-    button {
+    button.copy-btn {
       padding: 4px 8px;
       margin: 0 2px;
       cursor: pointer;
@@ -118,9 +133,9 @@
         </table>
       </div>
 
-      <!-- シーズンメニュー -->
+      <!-- ハロウィンメニュー -->
       <div class="category">
-        <h2>シーズンメニュー</h2>
+        <h2>ハロウィンメニュー</h2>
         <table>
           <thead>
             <tr>
@@ -134,7 +149,7 @@
       </div>
     </div>
 
-    <button onclick="copyToClipboard()">コピー</button>
+    <button class="copy-btn" onclick="copyToClipboard()">コピー</button>
     <div class="output" id="copyArea">ここに報告文が表示されます</div>
   </div>
 
