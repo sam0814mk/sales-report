@@ -8,35 +8,50 @@
     font-family: sans-serif;
     display: flex;
     justify-content: space-around;
+    align-items: flex-start;
+    background: #f8f9fa;
     padding: 20px;
   }
   section {
     width: 45%;
+    background: #fff;
+    border-radius: 10px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    padding: 15px;
+  }
+  h2 {
+    text-align: center;
+    background: #e8e8e8;
+    padding: 10px;
+    border-radius: 8px;
+    font-size: 18px;
+    margin-bottom: 10px;
   }
   table {
     border-collapse: collapse;
     width: 100%;
-    margin-top: 10px;
   }
   th, td {
-    border: 1px solid #aaa;
-    padding: 6px;
+    border: 1px solid #ccc;
+    padding: 8px;
     text-align: center;
-  }
-  button {
-    margin: 2px;
-    padding: 2px 6px;
-    font-size: 14px;
   }
   input[type="number"] {
     width: 60px;
     text-align: right;
+    padding: 3px;
   }
-  h2 {
-    text-align: center;
-    background: #eee;
-    padding: 8px;
-    border-radius: 8px;
+  button {
+    margin: 0 2px;
+    padding: 2px 6px;
+    font-size: 14px;
+    border: 1px solid #ccc;
+    background: #f2f2f2;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+  button:hover {
+    background: #e0e0e0;
   }
 </style>
 </head>
