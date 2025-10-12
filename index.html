@@ -57,7 +57,7 @@
       width: 100%;
       border-collapse: collapse;
       background: #fff;
-      table-layout: fixed; /* 列幅を均等に */
+      table-layout: fixed;
     }
     th, td {
       padding: 6px;
@@ -69,33 +69,26 @@
       color: white;
       text-align: center;
     }
-
-    /* 商品名列は左寄せ */
     td:first-child {
       text-align: left;
       font-weight: bold;
     }
-
-    /* 売上・補充列のボタン＋入力欄を横並び */
     td div.flex-container {
       display: flex;
       justify-content: center;
       align-items: center;
       gap: 3px;
     }
-
     td button {
       padding: 1px 3px;
       width: 25px;
       font-size: 0.85em;
       cursor: pointer;
     }
-
     td input[type="number"] {
       width: 40px;
       text-align: right;
     }
-
     .output {
       background: #fff;
       padding: 10px;
@@ -223,12 +216,16 @@ function setupButtons() {
       const { type, index, cat } = e.currentTarget.dataset;
       const input = document.querySelector(`input[data-index="${index}"][data-type="${type}"][data-cat="${cat}"]`);
       let val = parseInt(input.value) || 0;
+
+      // 入力値に対して ±10, ±100
       if (e.currentTarget.classList.contains('inc10')) val += 10;
       if (e.currentTarget.classList.contains('inc100')) val += 100;
       if (e.currentTarget.classList.contains('dec10')) val -= 10;
       if (e.currentTarget.classList.contains('dec100')) val -= 100;
+
       if (val < 0) val = 0;
       if (val > 100) val = 100;
+
       input.value = val;
       generateText();
     });
