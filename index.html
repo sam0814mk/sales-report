@@ -32,6 +32,18 @@
       padding: 5px;
       margin-right: 20px;
     }
+    .reset-btn {
+      margin-left: 40px; /* 約1cm */
+      padding: 5px 10px;
+      background-color: #f4d4a5;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+    .reset-btn:hover {
+      background-color: #edc98b;
+    }
     .totals {
       text-align: right;
       margin: 10px 0;
@@ -114,6 +126,7 @@
     <input type="date" id="reportDate" />
     <label for="reportName">名前：</label>
     <input type="text" id="reportName" placeholder="" />
+    <button id="resetBtn" class="reset-btn">リセット</button>
   </div>
 
   <div class="totals">
@@ -214,6 +227,7 @@ function setupButtons() {
   document.querySelectorAll('button').forEach(button => {
     button.addEventListener('click', e => {
       const { type, index, cat } = e.currentTarget.dataset;
+      if (!type || !index || !cat) return; // リセットボタン等を除外
       const input = document.querySelector(`input[data-index="${index}"][data-type="${type}"][data-cat="${cat}"]`);
       let val = parseInt(input.value) || 0;
 
@@ -224,8 +238,6 @@ function setupButtons() {
       if (e.currentTarget.classList.contains('dec100')) val -= 100;
 
       if (val < 0) val = 0; // 下限は0
-      // 上限チェックなし
-
       input.value = val;
       generateText();
     });
@@ -278,6 +290,14 @@ function copyToClipboard() {
     navigator.clipboard.writeText(text).then(() => alert("コピーしました！"));
   }
 }
+
+document.getElementById('resetBtn').addEventListener('click', () => {
+  document.getElementById('reportDate').value = '';
+  document.querySelectorAll('input[type="number"]').forEach(input => {
+    input.value = 0;
+  });
+  generateText();
+});
 
 createRows(normalProducts, 'normalMenu', 'normal');
 createRows(halloweenProducts, 'halloweenMenu', 'halloween');
