@@ -3,240 +3,190 @@
 <head>
   <meta charset="UTF-8" />
   <title>売上報告ツール</title>
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
   <style>
-    /* ========== 全体デザイン ========== */
     body {
       font-family: 'Segoe UI', sans-serif;
-      background-color: #fffaf3;
+      background-color: #fff4e5;
       margin: 0;
-      padding: 30px;
+      padding: 40px;
       color: #333;
     }
 
     h1 {
       text-align: center;
       font-size: 26px;
+      color: #3e2b15;
       margin-bottom: 15px;
-      letter-spacing: 0.02em;
     }
 
     .container {
-      max-width: 1100px;
+      max-width: 1200px;
       margin: 0 auto;
+      background: #fffaf3;
+      border-radius: 14px;
+      box-shadow: 0 0 6px rgba(0,0,0,0.1);
+      padding: 25px 30px;
     }
 
-    /* ========== 入力エリア（中央寄せ） ========== */
+    /* 上部フォーム中央寄せ */
     .form-group {
-      width: 100%;
       display: flex;
-      justify-content: center;  /* タイトルと同じ中央ライン */
+      justify-content: center;
       align-items: center;
-      gap: 10px;
-      margin-bottom: 12px;
-    }
-
-    label {
-      font-weight: bold;
-      margin-right: 4px;
-    }
-
-    input[type="text"],
-    input[type="date"] {
-      padding: 5px 8px;
-      border: 1px solid #ccc;
-      border-radius: 6px;
-      font-size: 14px;
+      gap: 8px;
+      margin-bottom: 15px;
     }
 
     .reset-btn {
-      padding: 6px 14px;
+      padding: 5px 10px;
       background-color: #f4d4a5;
       border: none;
-      border-radius: 8px;
+      border-radius: 6px;
       cursor: pointer;
       font-weight: bold;
-      transition: background-color 0.2s ease;
     }
-    .reset-btn:hover { background-color: #edc98b; }
 
+    .reset-btn:hover {
+      background-color: #edc98b;
+    }
+
+    /* コピー件数 */
     .totals {
       text-align: right;
-      margin-bottom: 12px;
       font-weight: bold;
-      font-size: 15px;
+      margin-bottom: 15px;
     }
 
-    /* ========== メイン（左右2カラム） ========== */
+    /* 🧱 左右2カラム全体構成 */
     .main {
       display: flex;
-      gap: 20px;
+      justify-content: space-between;
       align-items: flex-start;
-      width: 100%;
-      box-sizing: border-box;
+      gap: 30px;
     }
 
-    /* 左：メニュー群 */
+    /* 左側：通常→シーズンを上下に並べる */
     .menus {
-      width: 62%;           /* 左側の幅（メニュー） */
+      flex: 0 0 60%;
       display: flex;
       flex-direction: column;
-      gap: 14px;
-    }
-
-    .menu-wrapper {
-      display: flex;
-      justify-content: space-between;
-      gap: 20px;
-      flex-wrap: wrap;
+      gap: 25px;
     }
 
     .category {
       background: #fdf5e6;
-      padding: 18px;
-      border-radius: 14px;
-      width: 48%;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.06);
-      box-sizing: border-box;
+      padding: 15px;
+      border-radius: 12px;
+      box-shadow: 0 0 3px rgba(0,0,0,0.05);
     }
 
     .category h2 {
       text-align: center;
-      font-size: 18px;
-      margin-bottom: 12px;
+      background: #f0dfc4;
+      padding: 6px;
+      border-radius: 8px;
       color: #5b3e1c;
-      border-bottom: 1px solid #e2c59c;
-      padding-bottom: 6px;
+      margin-bottom: 10px;
     }
 
-    /* 右：出力エリア（固定右カラム） */
+    /* 右側出力欄 */
     .side {
-      width: 38%;           /* 右側の幅（出力） */
-      box-sizing: border-box;
+      flex: 0 0 38%;
       display: flex;
       flex-direction: column;
       align-items: stretch;
-      gap: 8px;
     }
 
-    .side .copy-btn {
-      padding: 10px 12px;
-      border: 1px solid #bbb;
-      border-radius: 8px;
-      background-color: #fff;
+    .copy-btn {
+      align-self: flex-start;
+      margin-bottom: 10px;
+      padding: 6px 12px;
+      background-color: #f4d4a5;
+      border: none;
+      border-radius: 6px;
       cursor: pointer;
       font-weight: bold;
-      transition: background-color 0.15s;
-      width: 100%;
-      box-sizing: border-box;
     }
-    .side .copy-btn:hover { background-color: #f5f5f5; }
+
+    .copy-btn:hover {
+      background-color: #edc98b;
+    }
 
     .output {
-      background: #fff;
-      padding: 12px;
+      flex: 1;
+      min-height: 300px;
       border: 1px dashed #aaa;
+      border-radius: 6px;
+      background: #fff;
+      padding: 10px;
       white-space: pre-wrap;
-      min-height: 320px;
-      border-radius: 8px;
-      font-size: 14px;
-      line-height: 1.5;
-      box-sizing: border-box;
+      resize: vertical;
     }
 
-    /* ========== テーブルデザイン ========== */
+    /* 表スタイル */
     table {
       width: 100%;
       border-collapse: collapse;
       background: #fff;
-      border-radius: 8px;
-      overflow: hidden;
       table-layout: fixed;
     }
 
     th, td {
-      padding: 7px 6px;
+      padding: 6px;
       border-bottom: 1px solid #ddd;
-      text-align: center;
       vertical-align: middle;
     }
 
     th {
       background: #d8b381;
       color: white;
-      font-weight: bold;
+      text-align: center;
     }
 
     td:first-child {
       text-align: left;
-      font-weight: 500;
-      word-wrap: break-word;
+      font-weight: bold;
     }
 
     td div.flex-container {
       display: flex;
       justify-content: center;
       align-items: center;
-      gap: 6px;
+      gap: 3px;
     }
 
     td button {
-      padding: 2px 4px;
-      width: 28px;
+      padding: 1px 3px;
+      width: 25px;
       font-size: 0.85em;
       cursor: pointer;
-      border: 1px solid #ccc;
-      border-radius: 4px;
-      background: #fff;
-      transition: background-color 0.15s;
     }
-    td button:hover { background-color: #f3f3f3; }
 
     td input[type="number"] {
-      width: 46px;
+      width: 40px;
       text-align: right;
-      border: 1px solid #ccc;
-      border-radius: 4px;
-      padding: 2px 4px;
-    }
-
-    /* ========== レスポンシブ（スマホ等） ========== */
-    @media (max-width: 880px) {
-      .main {
-        flex-direction: column;
-      }
-      .menus, .side {
-        width: 100%;
-      }
-      .category {
-        width: 100%;
-      }
-      .output { min-height: 200px; }
     }
   </style>
 </head>
 <body>
+  <div class="container">
+    <h1>🧾 売上報告ツール</h1>
 
-<h1>🧾 売上報告ツール</h1>
+    <div class="form-group">
+      <label for="reportDate">日付：</label>
+      <input type="date" id="reportDate" />
+      <label for="reportName">名前：</label>
+      <input type="text" id="reportName" placeholder="" />
+      <button id="resetBtn" class="reset-btn">リセット</button>
+    </div>
 
-<div class="container">
-  <div class="form-group">
-    <label for="reportDate">日付：</label>
-    <input type="date" id="reportDate" />
-    <label for="reportName">名前：</label>
-    <input type="text" id="reportName" placeholder="" />
-    <button id="resetBtn" class="reset-btn">リセット</button>
-  </div>
+    <div class="totals">
+      コピー用：<span id="copyCount">0</span> 件
+    </div>
 
-  <div class="totals">
-    コピー用：<span id="copyCount">0</span> 件
-  </div>
-
-  <!-- ========== メイン（左：メニュー / 右：出力） ========== -->
-  <div class="main">
-    <!-- 左：メニュー群 -->
-    <div class="menus">
-      <div class="menu-wrapper">
+    <div class="main">
+      <!-- 左ブロック（上下構成） -->
+      <div class="menus">
         <div class="category">
           <h2>通常メニュー</h2>
           <table>
@@ -266,152 +216,45 @@
         </div>
       </div>
 
-      <!-- （必要ならここに合計表示など追加できます） -->
+      <!-- 右ブロック（出力欄） -->
+      <div class="side">
+        <button class="copy-btn" onclick="copyToClipboard()">コピー</button>
+        <div class="output" id="copyArea">ここに報告文が表示されます</div>
+      </div>
     </div>
-
-    <!-- 右：出力（固定右カラム） -->
-    <aside class="side" aria-label="出力エリア">
-      <button class="copy-btn" onclick="copyToClipboard()">コピー</button>
-      <div class="output" id="copyArea">ここに報告文が表示されます</div>
-    </aside>
   </div>
-</div>
 
-<script>
-const normalProducts = [
-  "たまごサンド",
-  "ミルクセーキ",
-  "コーヒー",
-  "カフェラテ",
-  "ココア",
-  "モンブラン",
-  "BMC初心者パック",
-  "☆プリンアラモード",
-  "☆KINGコーヒー",
-  "☆KINGカフェラテ",
-  "☆KINGココア"
-];
+  <script>
+    const normalProducts = [
+      "たまごサンド", "ミルクセーキ", "コーヒー", "カフェラテ",
+      "ココア", "モンブラン", "BMC初心者パック",
+      "☆プリンアラモード", "☆KINGコーヒー", "☆KINGカフェラテ", "☆KINGココア"
+    ];
 
-const halloweenProducts = [
-  "🎅クリスマスセット2025"
-];
+    const halloweenProducts = ["🎅クリスマスセット2025"];
 
-const copyArea = document.getElementById('copyArea');
-const copyCount = document.getElementById('copyCount');
+    const copyArea = document.getElementById('copyArea');
+    const copyCount = document.getElementById('copyCount');
 
-function createRows(products, tbodyId, category) {
-  const tbody = document.getElementById(tbodyId);
-  products.forEach((product, index) => {
-    const row = document.createElement('tr');
-    row.innerHTML = `
-      <td>${product}</td>
-      <td>
-        <div class="flex-container">
-          <button class="dec100" data-index="${index}" data-type="sales" data-cat="${category}">《</button>
-          <button class="dec10" data-index="${index}" data-type="sales" data-cat="${category}">〈</button>
-          <input type="number" value="0" data-index="${index}" data-type="sales" data-cat="${category}" />
-          <button class="inc10" data-index="${index}" data-type="sales" data-cat="${category}">〉</button>
-          <button class="inc100" data-index="${index}" data-type="sales" data-cat="${category}">》</button>
-        </div>
-      </td>
-      <td>
-        <div class="flex-container">
-          <button class="dec100" data-index="${index}" data-type="restock" data-cat="${category}">《</button>
-          <button class="dec10" data-index="${index}" data-type="restock" data-cat="${category}">〈</button>
-          <input type="number" value="0" data-index="${index}" data-type="restock" data-cat="${category}" />
-          <button class="inc10" data-index="${index}" data-type="restock" data-cat="${category}">〉</button>
-          <button class="inc100" data-index="${index}" data-type="restock" data-cat="${category}">》</button>
-        </div>
-      </td>
-    `;
-    tbody.appendChild(row);
-  });
-}
-
-function setupButtons() {
-  // ボタンは全て一旦取り付け（コピー・リセットボタンも含むが、datasetが無ければ早期return）
-  document.querySelectorAll('button').forEach(button => {
-    button.addEventListener('click', e => {
-      const { type, index, cat } = e.currentTarget.dataset || {};
-      // datasetがある操作ボタンのみ変更処理（コピー等は別処理）
-      if (!type || index === undefined || !cat) return;
-      const input = document.querySelector(`input[data-index="${index}"][data-type="${type}"][data-cat="${cat}"]`);
-      if (!input) return;
-      let val = parseInt(input.value) || 0;
-      if (e.currentTarget.classList.contains('inc10')) val += 10;
-      if (e.currentTarget.classList.contains('inc100')) val += 100;
-      if (e.currentTarget.classList.contains('dec10')) val -= 10;
-      if (e.currentTarget.classList.contains('dec100')) val -= 100;
-      if (val < 0) val = 0;
-      input.value = val;
-      generateText();
-    });
-  });
-
-  // 入力イベント
-  document.querySelectorAll('input[type="number"], #reportDate, #reportName')
-    .forEach(el => el.addEventListener('input', generateText));
-}
-
-function generateText() {
-  const date = document.getElementById('reportDate').value;
-  const name = document.getElementById('reportName').value.trim();
-  let formattedDate = '';
-  if (date) {
-    const d = new Date(date);
-    formattedDate = `${d.getMonth() + 1}/${d.getDate()}`;
-  }
-  let lines = [];
-  if (formattedDate || name) lines.push(`${formattedDate}　${name}`);
-  let count = 0;
-  const process = (products, catLabel) => {
-    products.forEach((product, i) => {
-      const salesEl = document.querySelector(`input[data-index="${i}"][data-type="sales"][data-cat="${catLabel}"]`);
-      const restockEl = document.querySelector(`input[data-index="${i}"][data-type="restock"][data-cat="${catLabel}"]`);
-      const sales = salesEl ? parseInt(salesEl.value) || 0 : 0;
-      const restock = restockEl ? parseInt(restockEl.value) || 0 : 0;
-      if (sales === 0 && restock === 0) return;
-      count++;
-      let line = `${product}`;
-      if (sales > 0 && restock === 0) line += `　${sales}`;
-      else {
-        if (sales > 0) line += ` 売上${sales}`;
-        if (restock > 0) line += `　補充${restock}`;
-      }
-      lines.push(line);
-    });
-  };
-  process(normalProducts, 'normal');
-  process(halloweenProducts, 'halloween');
-  copyCount.textContent = count;
-  copyArea.textContent = lines.length > 0 ? lines.join('\n') : "ここに報告文が表示されます";
-}
-
-function copyToClipboard() {
-  const text = copyArea.textContent;
-  if (text && text !== "ここに報告文が表示されます") {
-    navigator.clipboard.writeText(text).then(() => alert("コピーしました！"));
-  } else {
-    alert("コピーする内容がありません。");
-  }
-}
-
-// リセットボタン（今日の日付に同期）
-document.getElementById('resetBtn').addEventListener('click', () => {
-  const today = new Date();
-  const yyyy = today.getFullYear();
-  const mm = String(today.getMonth() + 1).padStart(2, '0');
-  const dd = String(today.getDate()).padStart(2, '0');
-  document.getElementById('reportDate').value = `${yyyy}-${mm}-${dd}`;
-  document.querySelectorAll('input[type="number"]').forEach(input => input.value = 0);
-  generateText();
-});
-
-// 初期生成
-createRows(normalProducts, 'normalMenu', 'normal');
-createRows(halloweenProducts, 'halloweenMenu', 'halloween');
-setupButtons();
-</script>
-
-</body>
-</html>
+    function createRows(products, tbodyId, category) {
+      const tbody = document.getElementById(tbodyId);
+      products.forEach((product, index) => {
+        const row = document.createElement('tr');
+        row.innerHTML = `
+          <td>${product}</td>
+          <td>
+            <div class="flex-container">
+              <button class="dec100" data-index="${index}" data-type="sales" data-cat="${category}">《</button>
+              <button class="dec10" data-index="${index}" data-type="sales" data-cat="${category}">〈</button>
+              <input type="number" value="0" data-index="${index}" data-type="sales" data-cat="${category}" />
+              <button class="inc10" data-index="${index}" data-type="sales" data-cat="${category}">〉</button>
+              <button class="inc100" data-index="${index}" data-type="sales" data-cat="${category}">》</button>
+            </div>
+          </td>
+          <td>
+            <div class="flex-container">
+              <button class="dec100" data-index="${index}" data-type="restock" data-cat="${category}">《</button>
+              <button class="dec10" data-index="${index}" data-type="restock" data-cat="${category}">〈</button>
+              <input type="number" value="0" data-index="${index}" data-type="restock" data-cat="${category}" />
+              <button class="inc10" data-index="${index}" data-type="restock" data-cat="${category}">〉</button>
+              <button class="inc100" data-index="${index}" data-type="restock" data-cat=
