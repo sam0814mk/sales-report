@@ -8,111 +8,146 @@
       font-family: 'Segoe UI', sans-serif;
       background-color: #fffaf3;
       margin: 0;
-      padding: 40px;
+      padding: 30px;
       color: #333;
     }
+
     h1 {
       text-align: center;
-      font-size: 28px;
+      font-size: 26px;
+      margin-bottom: 15px;
     }
+
+    /* コンテナ全体 */
     .container {
       max-width: 1100px;
-      margin: auto;
+      margin: 0 auto;
     }
+
+    /* ✅ フォーム行：中央寄せ */
     .form-group {
-      margin-bottom: 20px;
-      text-align: center;
+      width: 100%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 15px;
     }
+
     label {
-      display: inline-block;
-      margin-right: 10px;
       font-weight: bold;
+      margin-right: 5px;
     }
+
     input[type="text"], input[type="date"] {
-      padding: 5px;
-      margin-right: 20px;
+      padding: 5px 8px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
     }
+
     .reset-btn {
-      margin-left: 40px; /* 約1cm */
-      padding: 5px 10px;
+      padding: 6px 12px;
       background-color: #f4d4a5;
       border: none;
       border-radius: 6px;
       cursor: pointer;
       font-weight: bold;
     }
+
     .reset-btn:hover {
       background-color: #edc98b;
     }
+
     .totals {
       text-align: right;
-      margin: 10px 0;
+      margin-bottom: 10px;
       font-weight: bold;
     }
+
     .menu-wrapper {
       display: flex;
       justify-content: space-between;
       gap: 20px;
     }
+
     .category {
       background: #fdf5e6;
       padding: 20px;
       border-radius: 12px;
       width: 48%;
     }
+
     .category h2 {
       text-align: center;
       margin-bottom: 15px;
       color: #5b3e1c;
     }
+
     table {
       width: 100%;
       border-collapse: collapse;
       background: #fff;
       table-layout: fixed;
     }
+
     th, td {
       padding: 6px;
       border-bottom: 1px solid #ddd;
       vertical-align: middle;
     }
+
     th {
       background: #d8b381;
       color: white;
       text-align: center;
     }
+
     td:first-child {
       text-align: left;
       font-weight: bold;
+      word-wrap: break-word;
     }
+
     td div.flex-container {
       display: flex;
       justify-content: center;
       align-items: center;
       gap: 3px;
     }
+
     td button {
       padding: 1px 3px;
       width: 25px;
       font-size: 0.85em;
       cursor: pointer;
     }
+
     td input[type="number"] {
       width: 40px;
       text-align: right;
     }
+
     .output {
       background: #fff;
       padding: 10px;
       border: 1px dashed #aaa;
       margin-top: 10px;
       white-space: pre-wrap;
-      min-height: 100px;
+      min-height: 180px;
+      border-radius: 6px;
     }
+
     button.copy-btn {
       padding: 4px 8px;
       margin: 0 2px;
       cursor: pointer;
+      border-radius: 4px;
+      border: 1px solid #bbb;
+      background-color: #fff;
+    }
+
+    button.copy-btn:hover {
+      background-color: #f5f5f5;
     }
   </style>
 </head>
