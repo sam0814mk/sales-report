@@ -16,7 +16,7 @@
       font-size: 28px;
     }
     .container {
-      max-width: 1400px;
+      max-width: 1800px; /* 横幅を広く */
       margin: auto;
     }
     .form-group {
@@ -89,11 +89,14 @@
       display: flex;
       justify-content: center;
       align-items: center;
-      gap: 2px;
+      gap: 3px;
     }
     td input[type="number"] {
-      width: 40px;
+      width: 50px; /* 少し広く */
       text-align: right;
+    }
+    input[data-type="outside"] {
+      background-color: #f8f2e3; /* 薄い茶色 */
     }
     .output {
       background: #fff;
@@ -108,7 +111,9 @@
       margin: 0 2px;
       cursor: pointer;
     }
-    td div.flex-container button { width: 25%; }
+    td div.flex-container button {
+      width: 40%; /* 横幅縮小 */
+    }
   </style>
 </head>
 <body>
@@ -194,7 +199,7 @@ function createRows(products, tbodyId, category) {
         <div class="flex-container">
           <button class="dec100" data-index="${index}" data-type="outside" data-cat="${category}">《</button>
           <button class="dec10" data-index="${index}" data-type="outside" data-cat="${category}">〈</button>
-          <input type="number" value="0" data-index="${index}" data-type="outside" data-cat="${category}" style="background-color:#fdf8ed;" />
+          <input type="number" value="0" data-index="${index}" data-type="outside" data-cat="${category}" />
           <button class="inc10" data-index="${index}" data-type="outside" data-cat="${category}">〉</button>
           <button class="inc100" data-index="${index}" data-type="outside" data-cat="${category}">》</button>
         </div>
@@ -211,26 +216,6 @@ function createRows(products, tbodyId, category) {
     `;
     tbody.appendChild(row);
   });
-}
-
-function setupButtons() {
-  document.querySelectorAll('button').forEach(button => {
-    button.addEventListener('click', e => {
-      const { type, index, cat } = e.currentTarget.dataset;
-      if (!type || !index || !cat) return;
-      const input = document.querySelector(`input[data-index="${index}"][data-type="${type}"][data-cat="${cat}"]`);
-      let val = parseInt(input.value) || 0;
-      if (e.currentTarget.classList.contains('inc10')) val += 10;
-      if (e.currentTarget.classList.contains('inc100')) val += 100;
-      if (e.currentTarget.classList.contains('dec10')) val -= 10;
-      if (e.currentTarget.classList.contains('dec100')) val -= 100;
-      if (val < 0) val = 0;
-      input.value = val;
-      generateText();
-    });
-  });
-  document.querySelectorAll('input[type="number"], #reportDate, #reportName')
-    .forEach(el => el.addEventListener('input', generateText));
 }
 
 document.querySelectorAll('button, input[type="number"], #reportDate, #reportName')
@@ -297,7 +282,6 @@ document.getElementById('resetBtn').addEventListener('click', () => {
 
 createRows(normalProducts, 'normalMenu', 'normal');
 createRows(halloweenProducts, 'halloweenMenu', 'halloween');
-setupButtons();
 </script>
 </body>
 </html>
