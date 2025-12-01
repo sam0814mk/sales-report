@@ -108,14 +108,7 @@
       margin: 0 2px;
       cursor: pointer;
     }
-    td div.flex-container button {
-      width: 20px;
-      padding: 0;
-      font-size: 0.85em;
-    }
-    input[data-type="outside"] {
-      background-color: #f8f5e9;
-    }
+    td div.flex-container button { width: 25%; }
   </style>
 </head>
 <body>
@@ -201,7 +194,7 @@ function createRows(products, tbodyId, category) {
         <div class="flex-container">
           <button class="dec100" data-index="${index}" data-type="outside" data-cat="${category}">《</button>
           <button class="dec10" data-index="${index}" data-type="outside" data-cat="${category}">〈</button>
-          <input type="number" value="0" data-index="${index}" data-type="outside" data-cat="${category}" />
+          <input type="number" value="0" data-index="${index}" data-type="outside" data-cat="${category}" style="background-color:#fdf8ed;" />
           <button class="inc10" data-index="${index}" data-type="outside" data-cat="${category}">〉</button>
           <button class="inc100" data-index="${index}" data-type="outside" data-cat="${category}">》</button>
         </div>
@@ -218,15 +211,14 @@ function createRows(products, tbodyId, category) {
     `;
     tbody.appendChild(row);
   });
-  setupButtons();
 }
 
 function setupButtons() {
-  document.querySelectorAll('button.dec10, button.dec100, button.inc10, button.inc100').forEach(button => {
+  document.querySelectorAll('button').forEach(button => {
     button.addEventListener('click', e => {
       const { type, index, cat } = e.currentTarget.dataset;
       if (!type || !index || !cat) return;
-      const input = document.querySelector(`input[data-index='${index}'][data-type='${type}'][data-cat='${cat}']`);
+      const input = document.querySelector(`input[data-index="${index}"][data-type="${type}"][data-cat="${cat}"]`);
       let val = parseInt(input.value) || 0;
       if (e.currentTarget.classList.contains('inc10')) val += 10;
       if (e.currentTarget.classList.contains('inc100')) val += 100;
@@ -237,13 +229,12 @@ function setupButtons() {
       generateText();
     });
   });
-
-  document.querySelectorAll('input[type="number"], #reportDate, #reportName').forEach(el => {
-    el.addEventListener('input', generateText);
-  });
+  document.querySelectorAll('input[type="number"], #reportDate, #reportName')
+    .forEach(el => el.addEventListener('input', generateText));
 }
 
-generateText();
+document.querySelectorAll('button, input[type="number"], #reportDate, #reportName')
+  .forEach(el => el.addEventListener('input', generateText));
 
 function generateText() {
   const date = document.getElementById('reportDate').value;
@@ -261,9 +252,9 @@ function generateText() {
 
   const process = (products, catLabel) => {
     products.forEach((product, i) => {
-      const inside = parseInt(document.querySelector(`input[data-index='${i}'][data-type='inside'][data-cat='${catLabel}']`).value) || 0;
-      const outside = parseInt(document.querySelector(`input[data-index='${i}'][data-type='outside'][data-cat='${catLabel}']`).value) || 0;
-      const restock = parseInt(document.querySelector(`input[data-index='${i}'][data-type='restock'][data-cat='${catLabel}']`).value) || 0;
+      const inside = parseInt(document.querySelector(`input[data-index="${i}"][data-type="inside"][data-cat="${catLabel}"]`).value) || 0;
+      const outside = parseInt(document.querySelector(`input[data-index="${i}"][data-type="outside"][data-cat="${catLabel}"]`).value) || 0;
+      const restock = parseInt(document.querySelector(`input[data-index="${i}"][data-type="restock"][data-cat="${catLabel}"]`).value) || 0;
 
       if (inside === 0 && outside === 0 && restock === 0) return;
 
@@ -306,6 +297,7 @@ document.getElementById('resetBtn').addEventListener('click', () => {
 
 createRows(normalProducts, 'normalMenu', 'normal');
 createRows(halloweenProducts, 'halloweenMenu', 'halloween');
+setupButtons();
 </script>
 </body>
 </html>
