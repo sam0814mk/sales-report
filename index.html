@@ -2,7 +2,7 @@
 <html lang="ja">
 <head>
   <meta charset="UTF-8" />
-  <title>売上報告ツール</title>
+  <title>売上報告ツール（店内・店外追加版）</title>
   <style>
     body {
       font-family: 'Segoe UI', sans-serif;
@@ -16,7 +16,7 @@
       font-size: 28px;
     }
     .container {
-      max-width: 1100px;
+      max-width: 1400px;
       margin: auto;
     }
     .form-group {
@@ -33,7 +33,7 @@
       margin-right: 20px;
     }
     .reset-btn {
-      margin-left: 40px; /* 約1cm */
+      margin-left: 40px;
       padding: 5px 10px;
       background-color: #f4d4a5;
       border: none;
@@ -75,11 +75,11 @@
       padding: 6px;
       border-bottom: 1px solid #ddd;
       vertical-align: middle;
+      text-align: center;
     }
     th {
       background: #d8b381;
       color: white;
-      text-align: center;
     }
     td:first-child {
       text-align: left;
@@ -90,12 +90,6 @@
       justify-content: center;
       align-items: center;
       gap: 3px;
-    }
-    td button {
-      padding: 1px 3px;
-      width: 25px;
-      font-size: 0.85em;
-      cursor: pointer;
     }
     td input[type="number"] {
       width: 40px;
@@ -114,18 +108,19 @@
       margin: 0 2px;
       cursor: pointer;
     }
+    td div.flex-container button { width: 35%; }
+    input[data-type="outside"] { background-color: #f8f6e9; }
   </style>
 </head>
 <body>
-
-<h1>🧾 売上報告ツール</h1>
+<h1>🧾 売上報告ツール（店内・店外対応）</h1>
 
 <div class="container">
   <div class="form-group">
     <label for="reportDate">日付：</label>
     <input type="date" id="reportDate" />
     <label for="reportName">名前：</label>
-    <input type="text" id="reportName" placeholder="" />
+    <input type="text" id="reportName" />
     <button id="resetBtn" class="reset-btn">リセット</button>
   </div>
 
@@ -140,8 +135,9 @@
         <thead>
           <tr>
             <th>商品名</th>
-            <th>売上個数</th>
-            <th>補充個数</th>
+            <th>売上（店内）</th>
+            <th>売上（店外）</th>
+            <th>補充</th>
           </tr>
         </thead>
         <tbody id="normalMenu"></tbody>
@@ -154,8 +150,9 @@
         <thead>
           <tr>
             <th>商品名</th>
-            <th>売上個数</th>
-            <th>補充個数</th>
+            <th>売上（店内）</th>
+            <th>売上（店外）</th>
+            <th>補充</th>
           </tr>
         </thead>
         <tbody id="halloweenMenu"></tbody>
@@ -169,22 +166,12 @@
 
 <script>
 const normalProducts = [
-  "たまごサンド",
-  "ミルクセーキ",
-  "コーヒー",
-  "カフェラテ",
-  "ココア",
-  "モンブラン",
-  "BMC初心者パック",
-  "☆プリンアラモード",
-  "☆KINGコーヒー",
-  "☆KINGカフェラテ",
-  "☆KINGココア"
+  "たまごサンド", "ミルクセーキ", "コーヒー", "カフェラテ", "ココア",
+  "モンブラン", "BMC初心者パック", "☆プリンアラモード",
+  "☆KINGコーヒー", "☆KINGカフェラテ", "☆KINGココア"
 ];
 
-const halloweenProducts = [
-  "🎅クリスマスセット2025"
-];
+const halloweenProducts = ["🎅クリスマスセット2025"];
 
 const copyArea = document.getElementById('copyArea');
 const copyCount = document.getElementById('copyCount');
@@ -197,11 +184,20 @@ function createRows(products, tbodyId, category) {
       <td>${product}</td>
       <td>
         <div class="flex-container">
-          <button class="dec100" data-index="${index}" data-type="sales" data-cat="${category}">《</button>
-          <button class="dec10" data-index="${index}" data-type="sales" data-cat="${category}">〈</button>
-          <input type="number" value="0" data-index="${index}" data-type="sales" data-cat="${category}" />
-          <button class="inc10" data-index="${index}" data-type="sales" data-cat="${category}">〉</button>
-          <button class="inc100" data-index="${index}" data-type="sales" data-cat="${category}">》</button>
+          <button class="dec100" data-index="${index}" data-type="inside" data-cat="${category}">《</button>
+          <button class="dec10" data-index="${index}" data-type="inside" data-cat="${category}">〈</button>
+          <input type="number" value="0" data-index="${index}" data-type="inside" data-cat="${category}" />
+          <button class="inc10" data-index="${index}" data-type="inside" data-cat="${category}">〉</button>
+          <button class="inc100" data-index="${index}" data-type="inside" data-cat="${category}">》</button>
+        </div>
+      </td>
+      <td>
+        <div class="flex-container">
+          <button class="dec100" data-index="${index}" data-type="outside" data-cat="${category}">《</button>
+          <button class="dec10" data-index="${index}" data-type="outside" data-cat="${category}">〈</button>
+          <input type="number" value="0" data-index="${index}" data-type="outside" data-cat="${category}" />
+          <button class="inc10" data-index="${index}" data-type="outside" data-cat="${category}">〉</button>
+          <button class="inc100" data-index="${index}" data-type="outside" data-cat="${category}">》</button>
         </div>
       </td>
       <td>
@@ -218,25 +214,8 @@ function createRows(products, tbodyId, category) {
   });
 }
 
-function setupButtons() {
-  document.querySelectorAll('button').forEach(button => {
-    button.addEventListener('click', e => {
-      const { type, index, cat } = e.currentTarget.dataset;
-      if (!type || !index || !cat) return;
-      const input = document.querySelector(`input[data-index="${index}"][data-type="${type}"][data-cat="${cat}"]`);
-      let val = parseInt(input.value) || 0;
-      if (e.currentTarget.classList.contains('inc10')) val += 10;
-      if (e.currentTarget.classList.contains('inc100')) val += 100;
-      if (e.currentTarget.classList.contains('dec10')) val -= 10;
-      if (e.currentTarget.classList.contains('dec100')) val -= 100;
-      if (val < 0) val = 0;
-      input.value = val;
-      generateText();
-    });
-  });
-  document.querySelectorAll('input[type="number"], #reportDate, #reportName')
-    .forEach(el => el.addEventListener('input', generateText));
-}
+document.querySelectorAll('button, input[type="number"], #reportDate, #reportName')
+  .forEach(el => el.addEventListener('input', generateText));
 
 function generateText() {
   const date = document.getElementById('reportDate').value;
@@ -246,26 +225,33 @@ function generateText() {
     const d = new Date(date);
     formattedDate = `${d.getMonth() + 1}/${d.getDate()}`;
   }
+
   let lines = [];
   if (formattedDate || name) lines.push(`${formattedDate}　${name}`);
+
   let count = 0;
+
   const process = (products, catLabel) => {
     products.forEach((product, i) => {
-      const sales = parseInt(document.querySelector(`input[data-index="${i}"][data-type="sales"][data-cat="${catLabel}"]`).value) || 0;
+      const inside = parseInt(document.querySelector(`input[data-index="${i}"][data-type="inside"][data-cat="${catLabel}"]`).value) || 0;
+      const outside = parseInt(document.querySelector(`input[data-index="${i}"][data-type="outside"][data-cat="${catLabel}"]`).value) || 0;
       const restock = parseInt(document.querySelector(`input[data-index="${i}"][data-type="restock"][data-cat="${catLabel}"]`).value) || 0;
-      if (sales === 0 && restock === 0) return;
+
+      if (inside === 0 && outside === 0 && restock === 0) return;
+
       count++;
+
       let line = `${product}`;
-      if (sales > 0 && restock === 0) line += `　${sales}`;
-      else {
-        if (sales > 0) line += ` 売上${sales}`;
-        if (restock > 0) line += `　補充${restock}`;
-      }
+      if (inside > 0) line += `　店内${inside}`;
+      if (outside > 0) line += `　店外${outside}`;
+      if (restock > 0) line += `　補充${restock}`;
       lines.push(line);
     });
   };
+
   process(normalProducts, 'normal');
   process(halloweenProducts, 'halloween');
+
   copyCount.textContent = count;
   copyArea.textContent = lines.length > 0 ? lines.join('\n') : "ここに報告文が表示されます";
 }
@@ -277,13 +263,13 @@ function copyToClipboard() {
   }
 }
 
-// ✅ リセットボタン機能（今日の日付に同期）
 document.getElementById('resetBtn').addEventListener('click', () => {
   const today = new Date();
   const yyyy = today.getFullYear();
   const mm = String(today.getMonth() + 1).padStart(2, '0');
   const dd = String(today.getDate()).padStart(2, '0');
   document.getElementById('reportDate').value = `${yyyy}-${mm}-${dd}`;
+
   document.querySelectorAll('input[type="number"]').forEach(input => {
     input.value = 0;
   });
@@ -292,8 +278,6 @@ document.getElementById('resetBtn').addEventListener('click', () => {
 
 createRows(normalProducts, 'normalMenu', 'normal');
 createRows(halloweenProducts, 'halloweenMenu', 'halloween');
-setupButtons();
 </script>
-
 </body>
 </html>
