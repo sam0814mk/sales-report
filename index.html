@@ -89,13 +89,12 @@
       display: flex;
       justify-content: center;
       align-items: center;
-      gap: 3px;
+      gap: 2px;
     }
     td input[type="number"] {
       width: 40px;
       text-align: right;
     }
-    td input.outside { background-color: #faf2e0; }
     .output {
       background: #fff;
       padding: 10px;
@@ -109,7 +108,14 @@
       margin: 0 2px;
       cursor: pointer;
     }
-    td div.flex-container button { width: 25px; padding: 1px; }
+    td div.flex-container button {
+      width: 20px;
+      padding: 0;
+      font-size: 0.85em;
+    }
+    input[data-type="outside"] {
+      background-color: #f8f5e9;
+    }
   </style>
 </head>
 <body>
@@ -195,7 +201,7 @@ function createRows(products, tbodyId, category) {
         <div class="flex-container">
           <button class="dec100" data-index="${index}" data-type="outside" data-cat="${category}">《</button>
           <button class="dec10" data-index="${index}" data-type="outside" data-cat="${category}">〈</button>
-          <input class="outside" type="number" value="0" data-index="${index}" data-type="outside" data-cat="${category}" />
+          <input type="number" value="0" data-index="${index}" data-type="outside" data-cat="${category}" />
           <button class="inc10" data-index="${index}" data-type="outside" data-cat="${category}">〉</button>
           <button class="inc100" data-index="${index}" data-type="outside" data-cat="${category}">》</button>
         </div>
@@ -216,25 +222,28 @@ function createRows(products, tbodyId, category) {
 }
 
 function setupButtons() {
-  document.querySelectorAll('button').forEach(button => {
-    const type = button.dataset.type;
-    const index = button.dataset.index;
-    const cat = button.dataset.cat;
-    if (!type || index === undefined || !cat) return;
-    button.addEventListener('click', () => {
+  document.querySelectorAll('button.dec10, button.dec100, button.inc10, button.inc100').forEach(button => {
+    button.addEventListener('click', e => {
+      const { type, index, cat } = e.currentTarget.dataset;
+      if (!type || !index || !cat) return;
       const input = document.querySelector(`input[data-index='${index}'][data-type='${type}'][data-cat='${cat}']`);
       let val = parseInt(input.value) || 0;
-      if (button.classList.contains('inc10')) val += 10;
-      if (button.classList.contains('inc100')) val += 100;
-      if (button.classList.contains('dec10')) val -= 10;
-      if (button.classList.contains('dec100')) val -= 100;
+      if (e.currentTarget.classList.contains('inc10')) val += 10;
+      if (e.currentTarget.classList.contains('inc100')) val += 100;
+      if (e.currentTarget.classList.contains('dec10')) val -= 10;
+      if (e.currentTarget.classList.contains('dec100')) val -= 100;
       if (val < 0) val = 0;
       input.value = val;
       generateText();
     });
   });
-  document.querySelectorAll('input[type="number"], #reportDate, #reportName').forEach(el => el.addEventListener('input', generateText));
+
+  document.querySelectorAll('input[type="number"], #reportDate, #reportName').forEach(el => {
+    el.addEventListener('input', generateText);
+  });
 }
+
+generateText();
 
 function generateText() {
   const date = document.getElementById('reportDate').value;
@@ -257,7 +266,9 @@ function generateText() {
       const restock = parseInt(document.querySelector(`input[data-index='${i}'][data-type='restock'][data-cat='${catLabel}']`).value) || 0;
 
       if (inside === 0 && outside === 0 && restock === 0) return;
+
       count++;
+
       let line = `${product}`;
       if (inside > 0) line += `　店内${inside}`;
       if (outside > 0) line += `　店外${outside}`;
@@ -287,7 +298,9 @@ document.getElementById('resetBtn').addEventListener('click', () => {
   const dd = String(today.getDate()).padStart(2, '0');
   document.getElementById('reportDate').value = `${yyyy}-${mm}-${dd}`;
 
-  document.querySelectorAll('input[type="number"]').forEach(input => input.value = 0);
+  document.querySelectorAll('input[type="number"]').forEach(input => {
+    input.value = 0;
+  });
   generateText();
 });
 
